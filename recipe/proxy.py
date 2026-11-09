@@ -150,7 +150,7 @@ class Stream:
     """Deterministic batches: seq-length windows from shuffled training blocks; some rows are fact windows."""
 
     def __init__(self, seq: int, batch: int, steps: int, fact_docs: list[list[int]], seed: int,
-                 sources=("general",)):
+                 sources=("general",), max_fact_share: float | None = None):
         self.seq, self.batch = seq, batch
         self.rng = np.random.default_rng(seed)
         self.shards = [a for s in sources for a in _blocks(s, "train")]
@@ -164,7 +164,8 @@ class Stream:
         fact_tokens += [EOS] * (n_fact_rows * seq - len(fact_tokens))
         self.fact_rows = np.array(fact_tokens, dtype=np.int64).reshape(n_fact_rows, seq)
         total_rows = steps * batch
-        if n_fact_rows > total_rows // 4:
+        cap = total_rows // 4 if max_fact_share is None else int(total_rows * max_fact_share)
+        if n_fact_rows > cap:
             raise ValueError("too many fact tokens for this budget")
         self.is_fact = np.zeros(total_rows, dtype=bool)
         self.is_fact[self.rng.choice(total_rows, n_fact_rows, replace=False)] = True
@@ -252,9 +253,11 @@ def train_and_probe(recipe: dict, seed: int, out_dir: Path, device: str | None =
     seq, batch, tokens = t["seq"], t["batch"], t["tokens"]
     steps = tokens // (seq * batch)
 
-    people = factlib.make_people(recipe["facts"]["per_tier"], seed=recipe["facts"].get("seed", 0))
+    people = factlib.make_people(recipe["facts"]["per_tier"], seed=recipe["facts"].get("seed", 0),
+                                 tiers=tuple(recipe["facts"].get("tiers", factlib.TIERS)))
     docs = [tok.encode(d, add_special_tokens=False).ids for d in factlib.exposures(people, seed=seed)]
-    stream = Stream(seq, batch, steps, docs, seed=seed, sources=tuple(t.get("sources", ["general"])))
+    stream = Stream(seq, batch, steps, docs, seed=seed, sources=tuple(t.get("sources", ["general"])),
+                    max_fact_share=t.get("max_fact_share"))
 
     # muP-style: hidden-matrix LR scales with base_width / d; embeddings and norms use the base LR
     base_lr, base_w = t["lr"], t.get("lr_base_width", 256)
@@ -299,6 +302,8 @@ def train_and_probe(recipe: dict, seed: int, out_dir: Path, device: str | None =
             k = str(r["tier"])
             by.setdefault(k, [0, 0]); by[k][0] += o; by[k][1] += 1
         res[f"recall_{kind}"] = {k: v[0] / v[1] for k, v in sorted(by.items(), key=lambda kv: int(kv[0]))}
+        if "tiers" in recipe["facts"]:   # E05+: counts per tier (absent before, so older results are unchanged)
+            res[f"facts_{kind}_by_tier"] = {k: v[0] for k, v in sorted(by.items(), key=lambda kv: int(kv[0]))}
         res[f"facts_{kind}"] = int(sum(ok))
         res.setdefault("fact_total", len(rows))
     (out_dir / "result.json").write_text(json.dumps(res, indent=1))

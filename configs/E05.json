@@ -1,0 +1,86 @@
+{
+ "id": "E05",
+ "title": "Exposure saturation: E04's three equal-table shapes with facts seen up to 1,024 times",
+ "prereg": "docs/experiments/E05_exposure_saturation.md",
+ "base": {
+  "model": {
+   "d": 384,
+   "layers": 7,
+   "heads": 6,
+   "kv": 2,
+   "ffn": 1296
+  },
+  "train": {
+   "seq": 512,
+   "batch": 32,
+   "tokens": 40000000,
+   "lr": 0.0015,
+   "lr_base_width": 256,
+   "mup_lr": true,
+   "wd": 0.1,
+   "warmup": 0.02,
+   "decay_start": 0.8,
+   "bf16": true,
+   "sources": [
+    "general"
+   ],
+   "max_fact_share": 0.35
+  },
+  "facts": {
+   "per_tier": 120,
+   "seed": 0,
+   "tiers": [
+    1,
+    4,
+    16,
+    64,
+    256,
+    1024
+   ]
+  }
+ },
+ "arms": {
+  "wide": {
+   "model": {
+    "d": 512,
+    "layers": 4,
+    "heads": 8,
+    "kv": 2,
+    "ffn": 1728,
+    "emb_rank": 256
+   }
+  },
+  "mid": {
+   "model": {
+    "d": 384,
+    "layers": 7,
+    "heads": 6,
+    "kv": 2,
+    "ffn": 1296,
+    "emb_rank": 256
+   }
+  },
+  "deep": {
+   "model": {
+    "d": 256,
+    "layers": 16,
+    "heads": 4,
+    "kv": 1,
+    "ffn": 864
+   }
+  }
+ },
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "decision": {
+  "primary": "facts_seen_by_tier.1024",
+  "guard": "val_loss.general",
+  "margin_frac": 0.03,
+  "margin_total": 480,
+  "guard_margin": 0.02,
+  "tier_pairs": true
+ }
+}

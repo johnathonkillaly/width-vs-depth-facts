@@ -65,12 +65,15 @@ class Person:
         return getattr(self, attr)
 
 
-def make_people(per_tier: int = 120, seed: int = 0) -> list[Person]:
+def make_people(per_tier: int = 120, seed: int = 0, tiers: tuple[int, ...] = TIERS) -> list[Person]:
+    """People in tier order. Extra tiers append people: the first len(TIERS) tiers are the same people either way."""
     rng = random.Random(f"bios:{seed}")
     names = [f"{a} {b}" for a in FIRST for b in LAST]
+    if len(tiers) * per_tier > len(names):
+        raise ValueError("not enough distinct names")
     rng.shuffle(names)
     out = []
-    for ti, tier in enumerate(TIERS):
+    for ti, tier in enumerate(tiers):
         for j in range(per_tier):
             out.append(Person(names[ti * per_tier + j], tier, rng.choice(CITIES), str(rng.randint(1900, 1999)),
                               rng.choice(UNIVERSITIES), rng.choice(EMPLOYERS)))

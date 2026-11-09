@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this, please cite it as below."
-title: "Width vs depth for fact storage in small language models (E02-E04)"
+title: "Width vs depth for fact storage in small language models (E02-E05)"
 authors:
   - family-names: Killaly
     given-names: Johnathon
@@ -8,6 +8,7 @@ date-released: 2026-11-09
 license: MIT
 repository-code: "https://github.com/johnathonkillaly/width-vs-depth-facts"
 abstract: >-
-  Three preregistered pilots on ~21M-parameter proxy LMs (13.2M non-embedding, 40M tokens, 1,920 synthetic facts).
+  Four preregistered pilots on ~21M-parameter proxy LMs (13.2M non-embedding, 40M tokens, 1,920 synthetic facts).
   At equal non-embedding parameters a wide-shallow shape stores more facts than a narrow-deep one; with an equal
-  tied word table about half of the lead remains.
+  tied word table about half of the lead remains. With facts seen up to 1,024 times (E05), every shape stores
+  them all, and the deep shape needs about twice the repetitions to reach the same recall.

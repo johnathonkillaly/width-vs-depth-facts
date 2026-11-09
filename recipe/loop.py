@@ -210,6 +210,40 @@ def _get(res: dict, metric: str):
     return v
 
 
+def _exposures_to(curve: dict, target: float):
+    """Exposures where the mean recall curve first reaches `target`, interpolated linearly in log2(exposures).
+    None if it never does; the first tier if it starts above."""
+    pts = sorted((int(k), v) for k, v in curve.items())
+    if pts[0][1] >= target:
+        return pts[0][0]
+    for (t0, r0), (t1, r1) in zip(pts, pts[1:]):
+        if r0 < target <= r1:
+            return round(2 ** (math.log2(t0) + (target - r0) / (r1 - r0) * (math.log2(t1) - math.log2(t0))), 1)
+    return None
+
+
+def _tier_pairs(exp: dict, rule: dict, rows: dict) -> dict:
+    """The primary rule applied to each tier's fact count, with the margin taken on that tier's own facts."""
+    out = {}
+    arms = list(rows)
+    per_tier = exp["base"]["facts"]["per_tier"] * 4
+    for i, a in enumerate(arms):
+        for b in arms[i + 1:]:
+            common = sorted(set(rows[a]) & set(rows[b]))
+            for tier in rows[a][common[0]]["facts_seen_by_tier"]:
+                d = [rows[a][s]["facts_seen_by_tier"][tier] - rows[b][s]["facts_seen_by_tier"][tier] for s in common]
+                margin = rule["margin_frac"] * per_tier
+                if all(x >= margin for x in d) or (statistics.mean(d) >= margin and all(x > 0 for x in d)):
+                    v = f"{a.upper()}_STORES_MORE"
+                elif all(x <= -margin for x in d) or (statistics.mean(d) <= -margin and all(x < 0 for x in d)):
+                    v = f"{b.upper()}_STORES_MORE"
+                else:
+                    v = "TIE"
+                out.setdefault(f"{a} vs {b}", {})[tier] = {"diff": d, "mean_diff": statistics.mean(d), "margin": margin,
+                                                          "verdict": v}
+    return out
+
+
 def report(exp_id: str) -> dict:
     exp = load_experiment(exp_id)
     rule = exp["decision"]
@@ -245,7 +279,7 @@ def report(exp_id: str) -> dict:
             total = total or rows[a][common[0]]["fact_total"]
             d = [_get(rows[a][s], rule["primary"]) - _get(rows[b][s], rule["primary"]) for s in common]
             g = [_get(rows[a][s], rule["guard"]) - _get(rows[b][s], rule["guard"]) for s in common]
-            margin = rule["margin_frac"] * total
+            margin = rule["margin_frac"] * rule.get("margin_total", total)
             if len(common) < len(exp["seeds"]):
                 verdict = "INCOMPLETE"
             elif all(x >= margin for x in d) or (statistics.mean(d) >= margin and all(x > 0 for x in d)):
@@ -262,6 +296,10 @@ def report(exp_id: str) -> dict:
             pairs[f"{a} vs {b}"] = {"seeds": common, "diff_primary": d, "mean_diff": statistics.mean(d),
                                     "margin": margin, "diff_guard": g, "verdict": verdict}
     out = {"experiment": exp_id, "summary": summary, "pairs": pairs, "rule": rule}
+    if rule.get("tier_pairs"):
+        out["tier_pairs"] = _tier_pairs(exp, rule, rows)
+        out["exposures_to_recall"] = {arm: {str(x): _exposures_to(s["recall_seen_by_tier"], x) for x in (0.5, 0.9)}
+                                      for arm, s in summary.items()}
     sel = out_dir(exp_id) / "selection.json"
     if sel.exists():
         out["lr_selection"] = json.loads(sel.read_text())

@@ -66,3 +66,40 @@ def test_reuse_from_tuned_experiment_sweeps_and_finals(tmp_path, monkeypatch):
     assert json.loads(f.read_text())["reused_from"].endswith("X/b/seed1/result.json")
     s = tmp_path / "runs" / "recipe" / "Y" / "sweep" / "b_lr0.25" / "seed0" / "result.json"
     assert json.loads(s.read_text())["reused_from"].endswith("X/sweep/b_lr0.25/seed0/result.json")
+
+
+def test_tier_pairs_and_exposures_to_recall(tmp_path, monkeypatch):
+    """E05: the primary rule per tier (margin on that tier's facts), and the log-interpolated exposure crossing."""
+    cfg = tmp_path / "cfg"; cfg.mkdir()
+    exp = {"id": "T", "base": {"facts": {"per_tier": 10}}, "arms": {"w": {}, "d": {}}, "seeds": [1, 2, 3],
+           "decision": {"primary": "facts_seen_by_tier.64", "guard": "val_loss.general", "margin_frac": 0.03,
+                        "margin_total": 40, "guard_margin": 0.02, "tier_pairs": True}}
+    (cfg / "T.json").write_text(json.dumps(exp))
+    monkeypatch.setattr(loop, "CONFIG_DIR", cfg)
+    monkeypatch.setenv("RECIPE_RUNS", str(tmp_path / "runs"))
+    curves = {"w": {"1": 0.0, "4": 0.5, "64": 1.0}, "d": {"1": 0.0, "4": 0.25, "64": 0.75}}
+    for arm, curve in curves.items():
+        for s in (1, 2, 3):
+            d = tmp_path / "runs" / "recipe" / "T" / arm / f"seed{s}"; d.mkdir(parents=True)
+            counts = {k: round(v * 40) for k, v in curve.items()}
+            (d / "result.json").write_text(json.dumps({
+                "val_loss": {"general": 4.0, "stack": 6.0}, "facts_unseen": 0, "train_seconds": 1.0, "params": {},
+                "recall_seen": curve, "facts_seen_by_tier": counts, "fact_total": 120}))
+    r = loop.report("T")
+    assert r["pairs"]["w vs d"]["margin"] == pytest.approx(1.2)                # 3% of margin_total 40
+    assert r["pairs"]["w vs d"]["verdict"] == "W_STORES_MORE"                  # tier 64: 40 vs 30 on every seed
+    tp = r["tier_pairs"]["w vs d"]
+    assert tp["1"]["verdict"] == "TIE" and tp["4"]["verdict"] == "W_STORES_MORE"
+    assert r["exposures_to_recall"]["w"]["0.5"] == 4                           # reaches 0.5 exactly at tier 4
+    # d: 0.25 at 4, 0.75 at 64 -> 0.5 halfway in log2 between 4 and 64 = 2**4 = 16
+    assert r["exposures_to_recall"]["d"]["0.5"] == pytest.approx(16.0)
+    assert r["exposures_to_recall"]["d"]["0.9"] is None
+
+
+def test_extra_tiers_keep_the_first_people():
+    from recipe import facts
+    base = facts.make_people(120, seed=0)
+    assert base == facts.make_people(120, seed=0, tiers=facts.TIERS)
+    more = facts.make_people(120, seed=0, tiers=(1, 4, 16, 64, 256, 1024))
+    assert more[:480] == base and len(more) == 720 and {p.tier for p in more[480:]} == {256, 1024}
+    assert len({p.name for p in more}) == 720

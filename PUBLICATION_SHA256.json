@@ -61,11 +61,24 @@
   "runs/recipe/E04/sweep/wide_lr2/seed0/result.json": "986a5b46b017806336b8e228444f01f1ac6f5dc099f962d05ba09f23c9c579b1",
   "runs/recipe/E04/wide/seed1/result.json": "1553d527980ef6e79be072b9a7c9a491fd837056922d282400357773c266b0fe",
   "runs/recipe/E04/wide/seed2/result.json": "3199292bb714b9d0d4d19e8ff321037e67ada3bc09bd3111f9a99d7b182d5973",
-  "runs/recipe/E04/wide/seed3/result.json": "e6a5400398eb5819854f0f9138a7524f821587955abc1dbf901fc3252f94b51d"
+  "runs/recipe/E04/wide/seed3/result.json": "e6a5400398eb5819854f0f9138a7524f821587955abc1dbf901fc3252f94b51d",
+  "runs/recipe/E05/FROZEN.json": "b9113b6219f1d070b4697330f8c60530c1f31f48a1885ce3cf5072a3d4d677ef",
+  "runs/recipe/E05/deep/seed1/result.json": "03c6699626d82ca0f87464ff4fa7dc50bb65ecc77e52e9cd03382770f69a97b4",
+  "runs/recipe/E05/deep/seed2/result.json": "fb3590f711022fc7bdd9e401cec148f0e2e0b13ef84b87f2321f4479575d7001",
+  "runs/recipe/E05/deep/seed3/result.json": "2cacc1a341f31a3b0f2d8d013695ebb4e2c2ef83f0366672a8691a7a1e3df6c6",
+  "runs/recipe/E05/ledger.jsonl": "9347433d95e9c74f57bb9855f8cc3304be919499be6588717359940aa90ab36f",
+  "runs/recipe/E05/mid/seed1/result.json": "ea2215b595b7208b540a09bb63593aba95a09d35bafd28d8f1088aac9cb249fa",
+  "runs/recipe/E05/mid/seed2/result.json": "8685cc640b2d96e4d90ff0ca627a6b5ef078cacedd0c70dda33ed80ae59c3f74",
+  "runs/recipe/E05/mid/seed3/result.json": "84822ab003cd5e01cb04dd01b3d3ff6d63efbba9f2b4773c970fa13199f19d53",
+  "runs/recipe/E05/report.json": "e393b06c2d140e175379d71fe4e8ee04e095343d5bd6a86dd8f7daa4985fea2d",
+  "runs/recipe/E05/wide/seed1/result.json": "0b734ffd6b2f28b6fd6a41223b8bf0a41da97c62104927f4ca228ce803ca85f4",
+  "runs/recipe/E05/wide/seed2/result.json": "7fba4438fe5cbd2edc6d76db0a62336760ae4fa7960bee7365ef57b4f8d1beb8",
+  "runs/recipe/E05/wide/seed3/result.json": "725e0b36193f0a6777a62921ab6f5e8eca6e55e844aa5f3a67380951336892ae"
  },
  "original_docs_sha256": {
   "E02_width_vs_depth_facts.md": "4c6b629baa15cc0690715c15f8854dbd71f6fbe022396b82f0b1bb2fd77d762e",
   "E03_fair_lr_rematch.md": "13a142ab7175ec920dcea16e4f6e7e2075807e20ad6648038134405c15ac9320",
-  "E04_equal_embedding.md": "8adfa9415cab2e83043bc6f7f778ac1b1ba9f2b3e77e4d1bd8296a529ccee424"
+  "E04_equal_embedding.md": "8adfa9415cab2e83043bc6f7f778ac1b1ba9f2b3e77e4d1bd8296a529ccee424",
+  "E05_exposure_saturation.md": "5ad8563d13c4f513d6b760407ad8b31304be35e2ce4f1bee12de3ee7833c9eeb"
  }
 }

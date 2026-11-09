@@ -79,3 +79,13 @@ def test_residual_stream_stays_float32_under_autocast():
             m(torch.randint(0, 97, (2, 9)))
         h.remove()
     assert seen == {"plain": torch.float32, "rank": torch.float32}
+
+
+def test_fact_share_cap_default_and_raised():
+    from recipe import proxy
+    docs = [[5] * 511] * 30                       # 30 fact rows of 512 at seq 512
+    with pytest.raises(ValueError):               # default cap: a quarter of 2 x 50 = 100 rows -> 25 < 30
+        proxy.Stream.__new__(proxy.Stream).__init__(512, 2, 50, docs, seed=0, sources=())
+    s = proxy.Stream.__new__(proxy.Stream)
+    s.__init__(512, 2, 50, docs, seed=0, sources=(), max_fact_share=0.35)
+    assert s.fact_share == pytest.approx(0.30)

@@ -1,7 +1,7 @@
 [project]
 name = "width-vs-depth-facts"
-version = "1.0.0"
-description = "Preregistered width vs depth fact-storage pilots on small proxy LMs (E02-E04)"
+version = "1.1.0"
+description = "Preregistered width vs depth fact-storage pilots on small proxy LMs (E02-E05)"
 requires-python = ">=3.12"
 dependencies = ["numpy", "tokenizers"]
 
