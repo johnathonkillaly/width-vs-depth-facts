@@ -1,0 +1,20 @@
+{
+ "id": "E03",
+ "title": "Fair-tuning rematch of E02: each shape at its own best learning rate",
+ "prereg": "docs/experiments/E03_fair_lr_rematch.md",
+ "base": {
+  "model": {"d": 384, "layers": 7, "heads": 6, "kv": 2, "ffn": 1296},
+  "train": {"seq": 512, "batch": 32, "tokens": 40000000, "lr": 0.003, "lr_base_width": 256, "mup_lr": true,
+            "wd": 0.1, "warmup": 0.02, "decay_start": 0.8, "bf16": true, "sources": ["general"]},
+  "facts": {"per_tier": 120, "seed": 0}
+ },
+ "arms": {
+  "wide": {"model": {"d": 512, "layers": 4, "heads": 8, "kv": 2, "ffn": 1728}},
+  "mid":  {"model": {"d": 384, "layers": 7, "heads": 6, "kv": 2, "ffn": 1296}},
+  "deep": {"model": {"d": 256, "layers": 16, "heads": 4, "kv": 1, "ffn": 864}}
+ },
+ "tune": {"lr_mults": [0.5, 1, 2], "tune_seed": 0, "select_by": "val_loss.general", "edge_extend": true,
+          "reuse_from": ["E02"]},
+ "seeds": [1, 2, 3],
+ "decision": {"primary": "facts_seen", "guard": "val_loss.general", "margin_frac": 0.03, "guard_margin": 0.02}
+}

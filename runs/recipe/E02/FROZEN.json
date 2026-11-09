@@ -1,0 +1,6 @@
+{
+ "experiment": "E02",
+ "config": "configs/E02.json",
+ "sha256": "6306a5d8ee0d3242b61692cec4bd51b7d244efc9a79794a336f0a41156ff083c",
+ "frozen_at": "2026-11-07T18:16:15-0700"
+}

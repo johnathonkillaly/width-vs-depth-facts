@@ -1,0 +1,17 @@
+[project]
+name = "width-vs-depth-facts"
+version = "1.0.0"
+description = "Preregistered width vs depth fact-storage pilots on small proxy LMs (E02-E04)"
+requires-python = ">=3.12"
+dependencies = ["numpy", "tokenizers"]
+
+[project.optional-dependencies]
+train = ["torch>=2.5"]
+dev = ["pytest>=8"]
+
+[tool.setuptools]
+packages = ["recipe"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

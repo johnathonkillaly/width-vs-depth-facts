@@ -1,0 +1,15 @@
+{"t": 1794150796.985284, "run": "sweep wide x0.5", "seed": 0, "lr": 0.0015, "facts_seen": 325, "val_general": 4.1993538395532655, "train_seconds": 1343.9}
+{"t": 1794152130.433884, "run": "sweep wide x2", "seed": 0, "lr": 0.006, "facts_seen": 266, "val_general": 4.385082028383378, "train_seconds": 1330.6}
+{"t": 1794153465.8990772, "run": "sweep wide x0.25", "seed": 0, "lr": 0.00075, "facts_seen": 224, "val_general": 4.329706718310451, "train_seconds": 1332.8}
+{"t": 1794154929.420223, "run": "sweep mid x0.5", "seed": 0, "lr": 0.0015, "facts_seen": 246, "val_general": 4.2865589836105675, "train_seconds": 1460.6}
+{"t": 1794156374.907399, "run": "sweep mid x2", "seed": 0, "lr": 0.006, "facts_seen": 113, "val_general": 4.506050363678755, "train_seconds": 1442.7}
+{"t": 1794158035.846754, "run": "sweep deep x0.5", "seed": 0, "lr": 0.0015, "facts_seen": 142, "val_general": 4.377102667104941, "train_seconds": 1658.0}
+{"t": 1794159696.754357, "run": "sweep deep x2", "seed": 0, "lr": 0.006, "facts_seen": 107, "val_general": 4.661565194624511, "train_seconds": 1658.0}
+{"t": 1794161372.721375, "run": "sweep deep x0.25", "seed": 0, "lr": 0.00075, "facts_seen": 94, "val_general": 4.540933329065252, "train_seconds": 1673.1}
+{"t": 1794162718.7783282, "run": "final wide seed 1", "seed": 1, "lr": 0.0015, "facts_seen": 258, "val_general": 4.203871874426675, "train_seconds": 1343.2}
+{"t": 1794164420.02224, "run": "final deep seed 1", "seed": 1, "lr": 0.0015, "facts_seen": 98, "val_general": 4.375331333705357, "train_seconds": 1698.3}
+{"t": 1794165805.528041, "run": "final wide seed 2", "seed": 2, "lr": 0.0015, "facts_seen": 298, "val_general": 4.20863506518698, "train_seconds": 1382.6}
+{"t": 1794167486.651513, "run": "final deep seed 2", "seed": 2, "lr": 0.0015, "facts_seen": 123, "val_general": 4.413933143690374, "train_seconds": 1678.1}
+{"t": 1794168887.811792, "run": "final wide seed 3", "seed": 3, "lr": 0.0015, "facts_seen": 412, "val_general": 4.2422713486882335, "train_seconds": 1398.3}
+{"t": 1794170438.843162, "run": "final mid seed 3", "seed": 3, "lr": 0.003, "facts_seen": 277, "val_general": 4.229622021579929, "train_seconds": 1548.0}
+{"t": 1794172217.707382, "run": "final deep seed 3", "seed": 3, "lr": 0.0015, "facts_seen": 138, "val_general": 4.397893797394814, "train_seconds": 1775.8}
